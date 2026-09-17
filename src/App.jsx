@@ -4,40 +4,39 @@ import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import Marquee from './components/Marquee'
 
+/**
+ * Main application component.
+ * Sets up Lenis smooth scrolling and renders Day 1 sections.
+ */
 export default function App() {
-  // Set up Lenis smooth scrolling
+  // Setup Lenis smooth scrolling
   useEffect(() => {
     const lenis = new Lenis({
       duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      gestureOrientation: 'vertical',
       smoothWheel: true,
-      touchMultiplier: 2,
     })
-
-    let animationFrameId
 
     function raf(time) {
       lenis.raf(time)
-      animationFrameId = requestAnimationFrame(raf)
+      requestAnimationFrame(raf)
     }
 
-    animationFrameId = requestAnimationFrame(raf)
+    const rafId = requestAnimationFrame(raf)
 
+    // Clean up on component unmount
     return () => {
-      cancelAnimationFrame(animationFrameId)
+      cancelAnimationFrame(rafId)
       lenis.destroy()
     }
   }, [])
 
   return (
-    <div className="relative min-h-screen bg-[#05070D] text-white selection:bg-[#0066FF] selection:text-white">
+    <div className="min-h-screen bg-[#05070D] text-white flex flex-col justify-between selection:bg-blue-600 selection:text-white">
       <Navbar />
-      <main>
+      <main className="flex-grow">
         <Hero />
-        <Marquee />
       </main>
+      <Marquee />
     </div>
   )
 }

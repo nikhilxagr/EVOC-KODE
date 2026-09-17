@@ -1,70 +1,21 @@
 @import "tailwindcss";
 
 @layer base {
-  :root {
-    --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-heading: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
-  }
-
   body {
-    font-family: var(--font-sans);
-    background-color: #05070D;
-    color: #F3F4F6;
-    overflow-x: hidden;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   }
 
-  h1, h2, h3, .font-heading {
-    font-family: var(--font-heading);
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
   }
 }
 
-/* Subtle Technical Grid Background */
-.bg-tech-grid {
-  background-size: 48px 48px;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-}
-
-/* Radial Glow Utility */
-.radial-glow {
-  background: radial-gradient(circle at 60% 40%, rgba(0, 102, 255, 0.12) 0%, rgba(0, 210, 255, 0.03) 45%, transparent 70%);
-}
-
-/* Subtle Text Gradient */
-.text-gradient-blue {
-  background: linear-gradient(135deg, #2A85FF 0%, #0066FF 50%, #00D2FF 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Lenis Smooth Scroll Recommended Rules */
-html.lenis, html.lenis body {
-  height: auto;
-}
-
-.lenis.lenis-smooth {
-  scroll-behavior: auto !important;
-}
-
-.lenis.lenis-smooth [data-lenis-prevent] {
-  overscroll-behavior: contain;
-}
-
-.lenis.lenis-stopped {
-  overflow: hidden;
-}
-
-.lenis.lenis-scrolling iframe {
-  pointer-events: none;
-}
-
-/* Infinite Marquee Animation */
-@keyframes marquee-slide {
-  from {
+/* Smooth continuous marquee animation */
+@keyframes marquee {
+  0% {
     transform: translateX(0%);
   }
-  to {
+  100% {
     transform: translateX(-50%);
   }
 }
@@ -72,8 +23,7 @@ html.lenis, html.lenis body {
 .animate-marquee {
   display: flex;
   width: max-content;
-  animation: marquee-slide 30s linear infinite;
-  will-change: transform;
+  animation: marquee 28s linear infinite;
 }
 
 .animate-marquee:hover {
