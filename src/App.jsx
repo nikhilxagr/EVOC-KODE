@@ -1,42 +1,51 @@
 import { useEffect } from 'react'
 import Lenis from 'lenis'
-import Navbar from './components/Navbar'
-import Hero from './components/Hero'
-import Marquee from './components/Marquee'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
-/**
- * Main application component.
- * Sets up Lenis smooth scrolling and renders Day 1 sections.
- */
+import Navbar       from './components/Navbar'
+import Hero         from './components/Hero'
+import Marquee      from './components/Marquee'
+import About        from './components/About'
+import Services     from './components/Services'
+import Process      from './components/Process'
+import Work         from './components/Work'
+import TechStack    from './components/TechStack'
+import CTA          from './components/CTA'
+import Footer       from './components/Footer'
+
+gsap.registerPlugin(ScrollTrigger)
+
 export default function App() {
-  // Setup Lenis smooth scrolling
   useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      smoothWheel: true,
-    })
+    // Lenis smooth scroll — driven by GSAP ticker
+    const lenis = new Lenis({ duration: 1.3, smoothWheel: true, lerp: 0.08 })
+    lenis.on('scroll', ScrollTrigger.update)
 
-    function raf(time) {
-      lenis.raf(time)
-      requestAnimationFrame(raf)
-    }
+    const onTick = (time) => lenis.raf(time * 1000)
+    gsap.ticker.add(onTick)
+    gsap.ticker.lagSmoothing(0)
 
-    const rafId = requestAnimationFrame(raf)
-
-    // Clean up on component unmount
     return () => {
-      cancelAnimationFrame(rafId)
+      gsap.ticker.remove(onTick)
       lenis.destroy()
     }
   }, [])
 
   return (
-    <div className="min-h-screen bg-[#05070D] text-white flex flex-col justify-between selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen bg-[#030712] text-white flex flex-col">
       <Navbar />
       <main className="flex-grow">
         <Hero />
+        <Marquee />
+        <About />
+        <Services />
+        <Process />
+        <Work />
+        <TechStack />
+        <CTA />
       </main>
-      <Marquee />
+      <Footer />
     </div>
   )
 }

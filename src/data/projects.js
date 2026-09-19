@@ -1,0 +1,171 @@
+// Projects data for EVOC KODES portfolio showcase
+export const projects = [
+  {
+    id: 'p01',
+    number: '01',
+    title: 'NEXUS STORE',
+    category: 'Commerce & 3D Experience',
+    label: 'CONCEPT · 2024',
+    tagline: 'Immersive 3D storefront with real-time checkout telemetry',
+    description:
+      'A next-gen D2C storefront rebuilt from the ground up — 3D product configurators, frictionless checkout, and AI-driven upsell at every step.',
+    fullDescription:
+      'NEXUS STORE reimagines the entire commerce UX. Built on React + Three.js, the product viewer renders photorealistic 3D models at 60fps. An embedded AI layer monitors micro-behaviors — hover hesitations, scroll patterns — and dynamically adjusts offers in real time. Checkout flow reduced to 2 taps on mobile.',
+    tags: ['React', 'Three.js', 'GSAP', 'Tailwind', 'AI/ML'],
+    gradient: 'from-cyan-600/40 via-blue-600/20 to-transparent',
+    accentColor: '#22D3EE',
+    year: '2024',
+    metrics: [
+      { label: 'Render Speed', value: '< 16ms' },
+      { label: 'Conversion Lift', value: '+38%' },
+      { label: 'Bundle Size', value: '< 140KB' },
+      { label: 'Perf Score', value: '98 / 100' },
+    ],
+    features: [
+      'Interactive WebGL 3D product configurator',
+      'Real-time checkout behavior telemetry',
+      'AI-powered dynamic offer engine',
+      'Sub-2s LCP on mobile networks',
+    ],
+  },
+  {
+    id: 'p02',
+    number: '02',
+    title: 'VOXEL AI SUITE',
+    category: 'AI Agents & Automation',
+    label: 'CONCEPT · 2024',
+    tagline: 'Autonomous AI calling agents + abandoned cart recovery platform',
+    description:
+      'An intelligent commerce operations layer — voice AI agents that call leads, recover carts, and handle support at scale, autonomously.',
+    fullDescription:
+      'VOXEL AI orchestrates a fleet of voice and text agents that handle the full post-purchase and pre-purchase journey. Real-time speech synthesis (< 420ms latency), sentiment analysis, and intent routing mean every customer interaction feels human — at 10,000x the scale. Integrated with Shopify, WooCommerce, and custom APIs.',
+    tags: ['Next.js', 'AI Agents', 'LLM', 'WebSockets', 'Node.js'],
+    gradient: 'from-indigo-600/40 via-purple-600/20 to-transparent',
+    accentColor: '#818CF8',
+    year: '2024',
+    metrics: [
+      { label: 'Voice Latency', value: '< 420ms' },
+      { label: 'Cart Recovery', value: '28.4%' },
+      { label: 'Live Calls', value: '10,000+' },
+      { label: 'Satisfaction', value: '4.9 / 5.0' },
+    ],
+    features: [
+      'Natural voice calling agents with LLM reasoning',
+      'Predictive abandoned-cart intent detection',
+      'Multi-channel re-engagement automation',
+      'Live sentiment and conversion dashboards',
+    ],
+  },
+  {
+    id: 'p03',
+    number: '03',
+    title: 'ORBIT PLATFORM',
+    category: 'Full-Stack / Cloud Infrastructure',
+    label: 'CONCEPT · 2024',
+    tagline: 'Multi-tenant merchant infrastructure for high-concurrency commerce',
+    description:
+      'Enterprise-grade distributed platform that powers multi-channel merchant operations — inventory sync, live analytics, edge delivery, and zero-downtime deployments.',
+    fullDescription:
+      'ORBIT is designed for brands hitting scale friction. A multi-tenant SaaS architecture with isolated PostgreSQL databases per merchant, Redis-backed real-time inventory, and a global CDN mesh. Flash-sale events with 50,000 req/sec handled without rate-limiting. Zero-downtime rolling deployments via containerized microservices.',
+    tags: ['React', 'Node.js', 'PostgreSQL', 'Redis', 'Docker', 'K8s'],
+    gradient: 'from-blue-600/30 via-cyan-500/20 to-transparent',
+    accentColor: '#3B82F6',
+    year: '2024',
+    metrics: [
+      { label: 'Throughput', value: '50k req/s' },
+      { label: 'Uptime', value: '99.99%' },
+      { label: 'Sync Latency', value: '< 25ms' },
+      { label: 'DB Regions', value: 'Multi-Region' },
+    ],
+    features: [
+      'High-concurrency order processing engine',
+      'Multi-tenant isolated cloud data stores',
+      'Global edge caching and sub-second delivery',
+      'Real-time financial and logistics analytics',
+    ],
+  },
+  {
+    id: 'p04',
+    number: '04',
+    title: 'EVOC ANALYTICS',
+    category: 'Data Visualization / BI',
+    label: 'CONCEPT · 2024',
+    tagline: 'Sales intelligence dashboard with real-time D2C metrics and AI forecasting',
+    description:
+      'A unified analytics command center for D2C brands — revenue, ad spend, margins, and AI-generated growth forecasts, all in one dashboard.',
+    fullDescription:
+      'EVOC Analytics consolidates data from 20+ commerce channels into a single real-time dashboard. Custom WebGL chart engine renders 1M+ data points at 60fps. An embedded forecasting model predicts next-30-day revenue with 92% accuracy based on historical patterns and external signals. Built for speed — initial load in < 1.5s.',
+    tags: ['React', 'D3.js', 'WebGL', 'Python', 'FastAPI'],
+    gradient: 'from-emerald-600/30 via-cyan-600/20 to-transparent',
+    accentColor: '#34D399',
+    year: '2024',
+    metrics: [
+      { label: 'Data Sources', value: '20+ Channels' },
+      { label: 'Forecast Accuracy', value: '92%' },
+      { label: 'Load Time', value: '< 1.5s' },
+      { label: 'Data Points', value: '1M+ live' },
+    ],
+    features: [
+      'Real-time multi-channel revenue aggregation',
+      'WebGL-powered high-density data visualization',
+      'AI-generated 30-day revenue forecasts',
+      'Custom alert engine with Slack / email routing',
+    ],
+  },
+  {
+    id: 'p05',
+    number: '05',
+    title: 'SHIP INTEL',
+    category: 'Logistics Intelligence',
+    label: 'CONCEPT · 2024',
+    tagline: 'AI-powered logistics routing and delivery intelligence for D2C brands',
+    description:
+      'Smart logistics layer that auto-selects the fastest and cheapest courier, predicts delivery delays before they happen, and reduces RTO rates by 40%.',
+    fullDescription:
+      'SHIP INTEL uses a combination of real-time courier performance data, geographic routing models, and historical delivery patterns to make split-second shipping decisions. Pincode-level delivery time predictions with 94% accuracy. Integrates with all major Indian and global courier APIs out of the box.',
+    tags: ['React', 'Node.js', 'ML/AI', 'Maps API', 'PostgreSQL'],
+    gradient: 'from-orange-600/30 via-amber-600/20 to-transparent',
+    accentColor: '#F59E0B',
+    year: '2024',
+    metrics: [
+      { label: 'RTO Reduction', value: '40%' },
+      { label: 'Delivery ETA', value: '94% accurate' },
+      { label: 'Couriers', value: '30+ integrated' },
+      { label: 'Decision Speed', value: '< 100ms' },
+    ],
+    features: [
+      'AI courier selection by speed & cost',
+      'Pincode-level delivery time predictions',
+      'Real-time delay detection and alerts',
+      'Automated RTO prevention workflows',
+    ],
+  },
+  {
+    id: 'p06',
+    number: '06',
+    title: 'CHECKOUT BOOST',
+    category: 'Checkout Optimization',
+    label: 'CONCEPT · 2024',
+    tagline: 'Smart checkout optimization engine that recovers abandoned carts in real time',
+    description:
+      'A plug-and-play checkout intelligence layer — one-click flows, smart payment retry, and personalized exit intent offers that lift revenue without changing the core stack.',
+    fullDescription:
+      'CHECKOUT BOOST monitors every user action in the checkout funnel and intervenes at the exact moment a user is about to drop. Exit intent? Show a targeted offer. Payment failure? Auto-retry with an alternate gateway. Mobile checkout completion gap? Switch to a thumb-optimized one-page flow. Average uplift: +26% checkout completion across 50 brand integrations.',
+    tags: ['JavaScript', 'React', 'Webhooks', 'A/B Testing', 'Analytics'],
+    gradient: 'from-pink-600/30 via-rose-600/20 to-transparent',
+    accentColor: '#F472B6',
+    year: '2024',
+    metrics: [
+      { label: 'Checkout Lift', value: '+26%' },
+      { label: 'Recovery Rate', value: '31%' },
+      { label: 'Integrations', value: '50+ brands' },
+      { label: 'Setup Time', value: '< 30 min' },
+    ],
+    features: [
+      'Real-time checkout funnel telemetry',
+      'Smart exit-intent offer engine',
+      'Automatic payment failure recovery',
+      'One-click mobile checkout optimization',
+    ],
+  },
+]
