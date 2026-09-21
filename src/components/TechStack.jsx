@@ -211,13 +211,14 @@ const filterTabs = [
   { id: 'backend', label: 'Backend & Cloud (6)', icon: Server },
 ]
 
-// Precision 3D Card with interactive tilt, specular light glint, and floating depth
-function Tech3DCard({ tech }) {
+// Precision 3D Card with interactive tilt (mouse + touch), specular light glint, and floating depth
+function Tech3DCard({ tech, isCompact = false, isActive = false }) {
   const cardRef = useRef(null)
   const [glare, setGlare] = useState({ x: 50, y: 50, opacity: 0 })
   const [transform, setTransform] = useState('')
   const [isHovered, setIsHovered] = useState(false)
 
+  // Mouse hover tracking (desktop)
   const handleMouseMove = (e) => {
     if (!cardRef.current) return
     const rect = cardRef.current.getBoundingClientRect()
@@ -226,11 +227,9 @@ function Tech3DCard({ tech }) {
     const centerX = rect.width / 2
     const centerY = rect.height / 2
 
-    // Real-time spatial tilt calculation (max ±14 degrees)
     const rotX = ((y - centerY) / centerY) * -13
     const rotY = ((x - centerX) / centerX) * 13
 
-    // Specular light glint reflection position
     const glareX = (x / rect.width) * 100
     const glareY = (y / rect.height) * 100
 
@@ -240,15 +239,41 @@ function Tech3DCard({ tech }) {
     )
   }
 
-  const handleMouseEnter = () => {
-    setIsHovered(true)
-  }
-
+  const handleMouseEnter = () => setIsHovered(true)
   const handleMouseLeave = () => {
     setIsHovered(false)
     setGlare((prev) => ({ ...prev, opacity: 0 }))
     setTransform('perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px) scale(1)')
   }
+
+  // Touch tracking (mobile)
+  const handleTouchMove = (e) => {
+    if (!cardRef.current || !e.touches[0]) return
+    const touch = e.touches[0]
+    const rect = cardRef.current.getBoundingClientRect()
+    const x = touch.clientX - rect.left
+    const y = touch.clientY - rect.top
+    const centerX = rect.width / 2
+    const centerY = rect.height / 2
+
+    const rotX = ((y - centerY) / centerY) * -12
+    const rotY = ((x - centerX) / centerX) * 12
+
+    const glareX = (x / rect.width) * 100
+    const glareY = (y / rect.height) * 100
+
+    setGlare({ x: glareX, y: glareY, opacity: 0.8 })
+    setTransform(
+      `perspective(900px) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg) translateZ(14px) scale(1.02)`
+    )
+  }
+
+  const handleTouchEnd = () => {
+    setGlare((prev) => ({ ...prev, opacity: 0 }))
+    setTransform('perspective(900px) rotateX(0deg) rotateY(0deg) translateZ(0px) scale(1)')
+  }
+
+  const isHighlighted = isHovered || isActive
 
   return (
     <div
@@ -256,7 +281,10 @@ function Tech3DCard({ tech }) {
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className="group relative w-full rounded-2xl cursor-default select-none transition-transform duration-200 ease-out"
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
+      className="group relative w-full h-full rounded-2xl cursor-default select-none transition-transform duration-200 ease-out"
       style={{
         transform: transform || 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px) scale(1)',
         transformStyle: 'preserve-3d',
@@ -267,46 +295,50 @@ function Tech3DCard({ tech }) {
       <div
         className="pointer-events-none absolute inset-0 rounded-2xl transition-opacity duration-300 z-30"
         style={{
-          background: `radial-gradient(circle 260px at ${glare.x}% ${glare.y}%, rgba(255,255,255,0.16), transparent 70%)`,
+          background: `radial-gradient(circle 240px at ${glare.x}% ${glare.y}%, rgba(255,255,255,0.18), transparent 70%)`,
           opacity: glare.opacity,
         }}
       />
 
       {/* Card Body with Multi-layered Depth */}
       <div
-        className="relative rounded-2xl p-6 h-full min-h-[185px] flex flex-col justify-between overflow-hidden"
+        className={`relative rounded-2xl flex flex-col justify-between overflow-hidden ${
+          isCompact ? 'p-4 min-h-[145px]' : 'p-6 h-full min-h-[185px]'
+        }`}
         style={{
-          background: isHovered
-            ? 'linear-gradient(145deg, rgba(14, 22, 42, 0.88), rgba(6, 10, 20, 0.96))'
+          background: isHighlighted
+            ? 'linear-gradient(145deg, rgba(14, 22, 42, 0.9), rgba(6, 10, 20, 0.98))'
             : 'linear-gradient(145deg, rgba(10, 15, 30, 0.65), rgba(4, 7, 15, 0.85))',
-          border: `1px solid ${isHovered ? `${tech.color}45` : 'rgba(255, 255, 255, 0.08)'}`,
-          boxShadow: isHovered
-            ? `0 24px 48px -12px ${tech.color}25, 0 0 24px -4px ${tech.color}18, inset 0 1px 0 rgba(255,255,255,0.12)`
+          border: `1px solid ${isHighlighted ? `${tech.color}50` : 'rgba(255, 255, 255, 0.08)'}`,
+          boxShadow: isHighlighted
+            ? `0 24px 48px -12px ${tech.color}28, 0 0 24px -4px ${tech.color}20, inset 0 1px 0 rgba(255,255,255,0.14)`
             : '0 10px 30px -10px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04)',
           backdropFilter: 'blur(16px)',
           WebkitBackdropFilter: 'blur(16px)',
           transition: 'border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease',
         }}
       >
-        {/* Top: Icon Badge (Elevated in 3D translateZ: 30px) */}
+        {/* Top: Icon Badge (Elevated in 3D translateZ: 28px) */}
         <div
           className="flex items-center justify-between"
           style={{ transform: 'translateZ(28px)', transformStyle: 'preserve-3d' }}
         >
           <div
-            className="w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-300"
+            className={`${
+              isCompact ? 'w-9 h-9 rounded-lg' : 'w-11 h-11 rounded-xl'
+            } flex items-center justify-center transition-all duration-300`}
             style={{
               background: `${tech.color}15`,
               border: `1px solid ${tech.color}35`,
               color: tech.color,
-              boxShadow: isHovered ? `0 0 18px ${tech.color}40` : 'none',
+              boxShadow: isHighlighted ? `0 0 18px ${tech.color}40` : 'none',
             }}
           >
             {tech.icon}
           </div>
 
           <span
-            className="font-mono text-[10px] tracking-wider uppercase px-2 py-0.5 rounded-full"
+            className="font-mono text-[9px] sm:text-[10px] tracking-wider uppercase px-2 py-0.5 rounded-full truncate max-w-[90px]"
             style={{
               color: tech.color,
               background: `${tech.color}12`,
@@ -317,13 +349,17 @@ function Tech3DCard({ tech }) {
           </span>
         </div>
 
-        {/* Bottom: Name & Specs (Elevated in 3D translateZ: 18px) */}
+        {/* Bottom: Name & Specs (Elevated in 3D translateZ: 16px) */}
         <div
-          className="mt-4 space-y-1.5"
+          className={`${isCompact ? 'mt-3 space-y-0.5' : 'mt-4 space-y-1.5'}`}
           style={{ transform: 'translateZ(18px)', transformStyle: 'preserve-3d' }}
         >
           <div className="flex items-baseline justify-between gap-2">
-            <h4 className="font-display font-bold text-base sm:text-lg text-white tracking-tight">
+            <h4
+              className={`font-display font-bold text-white tracking-tight ${
+                isCompact ? 'text-sm' : 'text-base sm:text-lg'
+              }`}
+            >
               {tech.name}
             </h4>
             <span className="font-mono text-[10px] text-gray-500 font-normal truncate">
@@ -331,10 +367,272 @@ function Tech3DCard({ tech }) {
             </span>
           </div>
 
-          <p className="text-xs text-gray-400 font-light line-clamp-2 leading-relaxed">
-            {tech.desc}
-          </p>
+          {!isCompact && (
+            <p className="text-xs text-gray-400 font-light line-clamp-2 leading-relaxed">
+              {tech.desc}
+            </p>
+          )}
         </div>
+      </div>
+    </div>
+  )
+}
+
+// Mobile auto-showcase with zoom transitions
+function MobileAutoShowcase({ skills }) {
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [phase, setPhase] = useState('active') // 'active', 'zoom-out', 'zoom-in'
+  const [direction, setDirection] = useState('next') // 'next' or 'prev'
+  const [isPaused, setIsPaused] = useState(false)
+
+  const timerRef = useRef(null)
+  const progressRef = useRef(null)
+  const touchStartX = useRef(0)
+  const touchStartY = useRef(0)
+  const touchStartTime = useRef(0)
+
+  const activeSkill = skills[currentIndex % skills.length] || skills[0]
+  const prevSkill = skills[(currentIndex - 1 + skills.length) % skills.length]
+  const nextSkill = skills[(currentIndex + 1) % skills.length]
+
+  // Reset index when skills change (e.g. tab filter clicked)
+  useEffect(() => {
+    setCurrentIndex(0)
+    setPhase('active')
+  }, [skills])
+
+  const goToNext = () => {
+    if (timerRef.current) clearTimeout(timerRef.current)
+    setDirection('next')
+    setPhase('zoom-out')
+    setTimeout(() => {
+      setCurrentIndex((prev) => (prev + 1) % skills.length)
+      setPhase('zoom-in')
+      setTimeout(() => setPhase('active'), 280)
+    }, 220)
+  }
+
+  const goToPrev = () => {
+    if (timerRef.current) clearTimeout(timerRef.current)
+    setDirection('prev')
+    setPhase('zoom-out')
+    setTimeout(() => {
+      setCurrentIndex((prev) => (prev - 1 + skills.length) % skills.length)
+      setPhase('zoom-in')
+      setTimeout(() => setPhase('active'), 280)
+    }, 220)
+  }
+
+  // Automatic progression with horizontal directional zoom-out and zoom-in
+  useEffect(() => {
+    if (isPaused || skills.length <= 1) return
+
+    const INTERVAL = 3200 // 3.2 seconds per skill
+
+    // Animate progress bar fill smoothly
+    if (progressRef.current) {
+      progressRef.current.style.transition = 'none'
+      progressRef.current.style.width = '0%'
+      void progressRef.current.offsetWidth // trigger reflow
+      progressRef.current.style.transition = `width ${INTERVAL - 350}ms linear`
+      progressRef.current.style.width = '100%'
+    }
+
+    timerRef.current = setTimeout(() => {
+      setDirection('next')
+      setPhase('zoom-out')
+
+      setTimeout(() => {
+        setCurrentIndex((prev) => (prev + 1) % skills.length)
+        setPhase('zoom-in')
+
+        setTimeout(() => {
+          setPhase('active')
+        }, 280)
+      }, 220)
+    }, INTERVAL)
+
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current)
+    }
+  }, [currentIndex, isPaused, skills.length])
+
+  // Direct jump by tapping any indicator dot
+  const jumpTo = (idx) => {
+    if (idx === currentIndex) return
+    if (timerRef.current) clearTimeout(timerRef.current)
+    setDirection(idx > currentIndex ? 'next' : 'prev')
+    setPhase('zoom-out')
+    setTimeout(() => {
+      setCurrentIndex(idx)
+      setPhase('zoom-in')
+      setTimeout(() => setPhase('active'), 280)
+    }, 200)
+  }
+
+  // Touch handlers: Swipe gestures
+  const handleTouchStart = (e) => {
+    setIsPaused(true)
+    if (e.touches && e.touches[0]) {
+      touchStartX.current = e.touches[0].clientX
+      touchStartY.current = e.touches[0].clientY
+      touchStartTime.current = Date.now()
+    }
+  }
+
+  const handleTouchEnd = (e) => {
+    setIsPaused(false)
+    if (e.changedTouches && e.changedTouches[0]) {
+      const deltaX = e.changedTouches[0].clientX - touchStartX.current
+      const deltaY = e.changedTouches[0].clientY - touchStartY.current
+      const deltaTime = Date.now() - touchStartTime.current
+
+      if (Math.abs(deltaX) > 35 && Math.abs(deltaX) > Math.abs(deltaY) * 1.1 && deltaTime < 650) {
+        if (deltaX < 0) {
+          goToNext()
+        } else {
+          goToPrev()
+        }
+      }
+    }
+  }
+
+  // Calculate dynamic transform based on zoom phase and horizontal direction
+  let cardTransform = 'scale(1) translateX(0px) translateZ(0px)'
+  let cardOpacity = 1
+  let cardFilter = 'none'
+
+  if (phase === 'zoom-out') {
+    const xOffset = direction === 'next' ? -28 : 28
+    cardTransform = `scale(0.86) translateX(${xOffset}px) translateZ(-45px)`
+    cardOpacity = 0.15
+    cardFilter = 'blur(4px)'
+  } else if (phase === 'zoom-in') {
+    const xOffset = direction === 'next' ? 28 : -28
+    cardTransform = `scale(1.05) translateX(${xOffset}px) translateZ(28px)`
+    cardOpacity = 0.88
+    cardFilter = 'blur(1px)'
+  }
+
+  return (
+    <div
+      className="relative w-full flex flex-col items-center select-none"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      {/* Horizontal Breadcrumb / Peek Context Bar */}
+      <div className="flex items-center justify-between w-full max-w-[340px] px-3 mb-1.5 text-[10px] font-mono">
+        <span
+          onClick={goToPrev}
+          className="truncate max-w-[100px] text-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
+        >
+          ← {prevSkill.name}
+        </span>
+        <span
+          className="px-2 py-0.5 rounded-full border text-[9px] font-bold tracking-wider uppercase transition-colors duration-300"
+          style={{
+            color: activeSkill.color,
+            borderColor: `${activeSkill.color}35`,
+            backgroundColor: `${activeSkill.color}10`,
+          }}
+        >
+          {String(currentIndex + 1).padStart(2, '0')} / {String(skills.length).padStart(2, '0')}
+        </span>
+        <span
+          onClick={goToNext}
+          className="truncate max-w-[100px] text-gray-500 hover:text-gray-300 transition-colors text-right cursor-pointer"
+        >
+          {nextSkill.name} →
+        </span>
+      </div>
+
+      {/* 3D Showcase Card Viewport */}
+      <div
+        className="w-full max-w-[340px] px-2 py-2"
+        style={{ perspective: '1100px', transformStyle: 'preserve-3d' }}
+      >
+        <div
+          className="w-full transition-all duration-300 ease-out"
+          style={{
+            transform: cardTransform,
+            opacity: cardOpacity,
+            filter: cardFilter,
+            willChange: 'transform, opacity, filter',
+          }}
+        >
+          <Tech3DCard tech={activeSkill} isActive={true} />
+        </div>
+      </div>
+
+      {/* Modern Status Badge & Smooth Progress Bar (No manual move buttons) */}
+      <div className="flex flex-col items-center gap-2.5 mt-3 w-full max-w-[320px]">
+        {/* Dynamic Skill Badge with Brand Color Tint */}
+        <div
+          className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full glass border backdrop-blur-xl shadow-lg transition-all duration-300"
+          style={{
+            borderColor: `${activeSkill.color}35`,
+            boxShadow: `0 0 20px ${activeSkill.color}15`,
+          }}
+        >
+          <span
+            className="w-2 h-2 rounded-full transition-colors duration-300"
+            style={{ backgroundColor: activeSkill.color }}
+          />
+          <span className="font-mono text-xs font-bold" style={{ color: activeSkill.color }}>
+            {String(currentIndex + 1).padStart(2, '0')}
+          </span>
+          <span className="font-mono text-xs text-gray-500">/</span>
+          <span className="font-mono text-xs text-gray-400">
+            {String(skills.length).padStart(2, '0')}
+          </span>
+          <span className="font-mono text-xs text-gray-600">•</span>
+          <span className="font-display font-bold text-xs text-white uppercase tracking-tight">
+            {activeSkill.name}
+          </span>
+        </div>
+
+        {/* Smooth Automatic Progress Bar */}
+        <div className="w-44 h-1 bg-white/[0.08] rounded-full overflow-hidden">
+          <div
+            ref={progressRef}
+            className="h-full rounded-full"
+            style={{
+              background: `linear-gradient(90deg, ${activeSkill.color}, #38BDF8)`,
+            }}
+          />
+        </div>
+
+        {/* Minimal dot pagination strip */}
+        <div className="flex items-center justify-center gap-1.5 pt-1">
+          {skills.map((skill, idx) => {
+            const isCurrent = idx === currentIndex
+            return (
+              <button
+                key={`dot-${skill.name}`}
+                onClick={() => jumpTo(idx)}
+                aria-label={`Jump to ${skill.name}`}
+                className="transition-all duration-300 cursor-pointer p-1"
+              >
+                <span
+                  className="block rounded-full transition-all duration-300"
+                  style={{
+                    width: isCurrent ? '18px' : '5px',
+                    height: '5px',
+                    backgroundColor: isCurrent ? skill.color : 'rgba(255,255,255,0.2)',
+                    boxShadow: isCurrent ? `0 0 8px ${skill.color}60` : 'none',
+                  }}
+                />
+              </button>
+            )
+          })}
+        </div>
+
+        <span className="font-mono text-[9px] text-gray-500 tracking-wider">
+          Auto-cycling in 3D • Swipe or hold to inspect
+        </span>
       </div>
     </div>
   )
@@ -345,7 +643,7 @@ export default function TechStack() {
   const gridStageRef = useRef(null)
   const [activeTab, setActiveTab] = useState('all')
 
-  // Smooth stage parallax on section mouse move
+  // Smooth stage parallax on section mouse move (desktop only)
   const handleSectionMouseMove = (e) => {
     if (!gridStageRef.current || window.innerWidth < 768) return
     const rect = gridStageRef.current.getBoundingClientRect()
@@ -407,31 +705,31 @@ export default function TechStack() {
       ref={sectionRef}
       onMouseMove={handleSectionMouseMove}
       onMouseLeave={handleSectionMouseLeave}
-      className="py-24 relative overflow-hidden bg-[#030712]"
+      className="py-20 sm:py-24 relative overflow-hidden bg-[#030712]"
     >
-      <div className="section-line mb-16" />
+      <div className="section-line mb-14 sm:mb-16" />
 
       {/* Subtle ambient lighting gradients (No bubbles) */}
       <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-blue-600/10 blur-[130px] rounded-full" />
       <div className="pointer-events-none absolute -bottom-40 right-1/4 w-[450px] h-[250px] bg-cyan-600/10 blur-[120px] rounded-full" />
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
         {/* Section Header */}
-        <div className="tech-header flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
+        <div className="tech-header flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-8 mb-8 sm:mb-12">
           <div className="space-y-3 max-w-2xl">
             <span className="font-mono text-xs tracking-[0.28em] uppercase text-cyan-400 block">
               Core Stack
             </span>
-            <h2 className="font-display text-3xl sm:text-5xl font-extrabold text-white tracking-tight uppercase">
+            <h2 className="font-display text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight uppercase">
               Engineered For <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-indigo-400">Scale & Speed</span>
             </h2>
-            <p className="text-gray-400 text-sm sm:text-base font-light leading-relaxed">
+            <p className="text-gray-400 text-xs sm:text-sm md:text-base font-light leading-relaxed">
               The 12 primary technologies we rely on to build high-performance, production-grade applications.
             </p>
           </div>
 
           {/* Category Filter Pills */}
-          <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl glass border border-white/[0.08] bg-[#0A0F1E]/80 backdrop-blur-xl">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 p-1.5 rounded-2xl glass border border-white/[0.08] bg-[#0A0F1E]/80 backdrop-blur-xl">
             {filterTabs.map((tab) => {
               const Icon = tab.icon
               const isActive = activeTab === tab.id
@@ -439,7 +737,7 @@ export default function TechStack() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-3.5 py-2 rounded-xl font-mono text-xs transition-all duration-200 cursor-pointer ${
+                  className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-xl font-mono text-xs transition-all duration-200 cursor-pointer ${
                     isActive
                       ? 'bg-blue-500/20 text-cyan-300 border border-cyan-500/40 shadow-[0_0_16px_rgba(34,211,238,0.25)]'
                       : 'text-gray-400 hover:text-white hover:bg-white/[0.04] border border-transparent'
@@ -453,16 +751,21 @@ export default function TechStack() {
           </div>
         </div>
 
-        {/* Interactive 3D Spatial Grid (Clean 12-Card Matrix) */}
+        {/* Mobile view */}
+        <div className="block md:hidden mb-12">
+          <MobileAutoShowcase skills={filteredSkills} />
+        </div>
+
+        {/* Desktop view */}
         <div
           ref={gridStageRef}
-          className="transition-transform duration-300 ease-out"
+          className="hidden md:block transition-transform duration-300 ease-out"
           style={{
             transformStyle: 'preserve-3d',
             willChange: 'transform',
           }}
         >
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-14">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-14">
             {filteredSkills.map((tech) => (
               <div key={tech.name} className="tech-card-item">
                 <Tech3DCard tech={tech} />
@@ -472,14 +775,14 @@ export default function TechStack() {
         </div>
 
         {/* Technical Architecture Strip */}
-        <div className="p-6 sm:p-7 rounded-3xl glass border border-white/[0.08] bg-gradient-to-r from-[#090F1E]/90 to-[#060A14]/90 backdrop-blur-2xl grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="p-5 sm:p-7 rounded-3xl glass border border-white/[0.08] bg-gradient-to-r from-[#090F1E]/90 to-[#060A14]/90 backdrop-blur-2xl grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-cyan-400 font-mono text-xs">
               <CheckCircle2 className="w-3.5 h-3.5" />
               <span>12 Flagship Tools</span>
             </div>
-            <p className="font-display font-bold text-base sm:text-lg text-white">Curated Foundation</p>
-            <p className="font-mono text-[11px] text-gray-500">Zero legacy bloat</p>
+            <p className="font-display font-bold text-sm sm:text-base md:text-lg text-white">Curated Foundation</p>
+            <p className="font-mono text-[10px] sm:text-[11px] text-gray-500">Zero legacy bloat</p>
           </div>
 
           <div className="space-y-1">
@@ -487,8 +790,8 @@ export default function TechStack() {
               <Activity className="w-3.5 h-3.5" />
               <span>&lt; 50ms Edge</span>
             </div>
-            <p className="font-display font-bold text-base sm:text-lg text-white">Global Distribution</p>
-            <p className="font-mono text-[11px] text-gray-500">Sub-second load times</p>
+            <p className="font-display font-bold text-sm sm:text-base md:text-lg text-white">Global Distribution</p>
+            <p className="font-mono text-[10px] sm:text-[11px] text-gray-500">Sub-second load times</p>
           </div>
 
           <div className="space-y-1">
@@ -496,8 +799,8 @@ export default function TechStack() {
               <Database className="w-3.5 h-3.5" />
               <span>ACID Storage</span>
             </div>
-            <p className="font-display font-bold text-base sm:text-lg text-white">Enterprise Data</p>
-            <p className="font-mono text-[11px] text-gray-500">Postgres + Redis caching</p>
+            <p className="font-display font-bold text-sm sm:text-base md:text-lg text-white">Enterprise Data</p>
+            <p className="font-mono text-[10px] sm:text-[11px] text-gray-500">Postgres + Redis caching</p>
           </div>
 
           <div className="space-y-1">
@@ -505,8 +808,8 @@ export default function TechStack() {
               <Cpu className="w-3.5 h-3.5" />
               <span>100% Native</span>
             </div>
-            <p className="font-display font-bold text-base sm:text-lg text-white">Container Driven</p>
-            <p className="font-mono text-[11px] text-gray-500">Deterministic deployments</p>
+            <p className="font-display font-bold text-sm sm:text-base md:text-lg text-white">Container Driven</p>
+            <p className="font-mono text-[10px] sm:text-[11px] text-gray-500">Deterministic deployments</p>
           </div>
         </div>
       </div>

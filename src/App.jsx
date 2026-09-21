@@ -38,7 +38,6 @@ export default function App() {
     }
     rafId = requestAnimationFrame(raf)
 
-    // Smooth anchor navigation for all in-page links
     const handleAnchorClick = (e) => {
       const anchor = e.target.closest('a[href^="#"]')
       if (!anchor) return
@@ -60,7 +59,7 @@ export default function App() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-[#030712] text-white flex flex-col">
+    <div className="min-h-screen bg-[#030712] text-white flex flex-col overflow-x-hidden w-full max-w-[100vw]">
       <Navbar />
       <main className="flex-grow">
         <Hero />
