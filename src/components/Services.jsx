@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef } from 'react'
-import { ArrowUpRight, Code2, Layers, Cpu, Smartphone, Sparkles, Box } from 'lucide-react'
+import { ArrowUpRight, Code2, Layers, Cpu, Smartphone, Palette, Box } from 'lucide-react'
 import gsap from 'gsap'
 
 const services = [
@@ -52,7 +52,7 @@ const services = [
     number: '05',
     title: 'UI / UX Engineering',
     subtitle: 'Design Systems',
-    icon: Sparkles,
+    icon: Palette,
     description:
       'Design systems, motion design, and production-quality interfaces that feel premium and perform flawlessly.',
     tech: ['Figma', 'GSAP', 'Framer', 'Storybook', 'Tailwind'],

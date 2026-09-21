@@ -8,7 +8,6 @@ import {
   Clock,
   ShieldCheck,
   Send,
-  Sparkles,
 } from 'lucide-react'
 import gsap from 'gsap'
 

@@ -104,7 +104,7 @@ export default function Footer() {
               Terms
             </a>
             <span className="font-mono text-[10px] text-gray-700 tracking-widest">
-              Made with ⚡ by EVOC KODES
+              Crafted with precision by EVOC KODES
             </span>
           </div>
         </div>

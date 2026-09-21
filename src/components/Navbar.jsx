@@ -1,28 +1,25 @@
-
 import { useState, useEffect } from 'react'
-import { ArrowUpRight, Menu, X } from 'lucide-react'
+import { Menu, X, ArrowUpRight } from 'lucide-react'
 
-const links = [
-  { name: 'Work',      href: '#work'      },
-  { name: 'Services',  href: '#services'  },
-  { name: 'About',     href: '#about'     },
-  { name: 'Process',   href: '#process'   },
-  { name: 'Tech',      href: '#tech'      },
-  { name: 'Contact',   href: '#contact'   },
+// Navigation links reflecting all core landing page sections
+const navSections = [
+  { name: 'About',      href: '#about'    },
+  { name: 'Services',   href: '#services' },
+  { name: 'Process',    href: '#process'  },
+  { name: 'Work',       href: '#work'     },
+  { name: 'Tech Stack', href: '#tech'     },
 ]
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
-  const [open,     setOpen]     = useState(false)
+  const [open, setOpen] = useState(false)
 
-  // Darken navbar on scroll
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40)
+    const onScroll = () => setScrolled(window.scrollY > 20)
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Lock body scroll when mobile menu is open
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
@@ -30,80 +27,86 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled ? 'glass border-b border-white/[0.06]' : 'bg-transparent'
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? 'bg-[#030712]/85 backdrop-blur-xl border-b border-white/[0.08] py-3.5 shadow-lg shadow-black/40'
+          : 'bg-transparent py-5'
       }`}
     >
-      <nav className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-
-        {/* Logo */}
+      <nav className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+        {/* Left: Brand Identity */}
         <a href="#" className="flex items-center gap-3 group" aria-label="EVOC KODES home">
-          <div className="relative w-8 h-8">
-            <img src="/logo.png" alt="EVOC KODES logo" className="w-8 h-8 object-contain" />
-            {/* Neon glow ring on hover */}
-            <div className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 glow-cyan ring-2 ring-cyan-400/30" />
+          <div className="w-8 h-8 rounded-lg bg-white/[0.05] border border-white/10 flex items-center justify-center p-1.5 transition-transform duration-300 group-hover:scale-105">
+            <img src="/logo.png" alt="EVOC KODES" className="w-full h-full object-contain" />
           </div>
-          <span className="font-mono text-sm font-bold tracking-widest text-white uppercase">
-            EVOC <span className="text-cyan-400">KODES</span>
-          </span>
+          <div className="flex flex-col">
+            <span className="font-round8 text-base font-extrabold tracking-tight text-white uppercase leading-none">
+              EVOC <span className="text-cyan-400">KODES</span>
+            </span>
+            <span className="font-mono text-[9px] text-gray-400 tracking-[0.2em] uppercase mt-0.5">
+              TECHNOLOGIES
+            </span>
+          </div>
         </a>
 
-        {/* Desktop links */}
-        <ul className="hidden md:flex items-center gap-8">
-          {links.map(link => (
-            <li key={link.name}>
-              <a
-                href={link.href}
-                className="text-sm font-medium text-gray-400 hover:text-cyan-400 transition-colors duration-200 tracking-wide relative group"
-              >
-                {link.name}
-                {/* Underline slide-in */}
-                <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-cyan-400 group-hover:w-full transition-all duration-300" />
-              </a>
-            </li>
-          ))}
-        </ul>
+        {/* Center: Desktop Navigation Links for All Sections */}
+        <div className="hidden lg:flex items-center">
+          <ul className="flex items-center gap-1.5 bg-white/[0.03] border border-white/[0.08] px-3 py-1.5 rounded-full backdrop-blur-md">
+            {navSections.map((sec) => (
+              <li key={sec.name}>
+                <a
+                  href={sec.href}
+                  className="text-xs sm:text-[13px] font-medium text-gray-300 hover:text-white px-3.5 py-1.5 rounded-full hover:bg-white/[0.08] transition-all duration-200"
+                >
+                  {sec.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-        {/* CTA button */}
-        <div className="hidden md:flex">
+        {/* Right: Contact Form CTA Button (Orange Pill, No Phone Number) */}
+        <div className="hidden sm:flex items-center">
           <a
             href="#contact"
-            className="group inline-flex items-center gap-2 px-5 py-2 rounded-full text-xs font-semibold font-mono tracking-widest uppercase text-black bg-cyan-400 hover:bg-cyan-300 transition-all duration-200 glow-cyan"
+            className="btn-orange px-6 py-2.5 rounded-full text-xs font-display font-bold tracking-wider uppercase flex items-center gap-1.5"
           >
-            <span>Let's Build</span>
-            <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            <span>Contact Us</span>
+            <ArrowUpRight className="w-3.5 h-3.5" />
           </a>
         </div>
 
-        {/* Mobile hamburger */}
+        {/* Mobile Menu Hamburger */}
         <button
-          onClick={() => setOpen(v => !v)}
-          className="md:hidden text-gray-300 hover:text-cyan-400 transition-colors"
+          onClick={() => setOpen((prev) => !prev)}
+          className="lg:hidden text-gray-300 hover:text-white p-1.5 rounded-lg bg-white/[0.04] border border-white/10 transition-colors"
           aria-label="Toggle navigation menu"
         >
-          {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </nav>
 
-      {/* Mobile menu overlay */}
+      {/* Mobile Drawer Menu */}
       {open && (
-        <div className="md:hidden fixed inset-0 top-16 bg-[#030712]/95 backdrop-blur-xl z-50 flex flex-col items-center justify-center gap-8">
-          {links.map(link => (
+        <div className="lg:hidden fixed inset-0 top-[60px] bg-[#030712]/98 backdrop-blur-2xl z-50 flex flex-col items-center justify-center gap-6 px-6">
+          {navSections.map((sec) => (
             <a
-              key={link.name}
-              href={link.href}
+              key={sec.name}
+              href={sec.href}
               onClick={() => setOpen(false)}
-              className="font-bebas text-5xl text-white hover:text-cyan-400 transition-colors duration-200 tracking-widest"
+              className="font-round8 text-2xl sm:text-3xl text-white hover:text-cyan-400 transition-colors uppercase tracking-tight"
             >
-              {link.name}
+              {sec.name}
             </a>
           ))}
+
           <a
             href="#contact"
             onClick={() => setOpen(false)}
-            className="mt-4 px-8 py-3 rounded-full bg-cyan-400 text-black font-semibold text-sm tracking-widest uppercase glow-cyan"
+            className="btn-orange mt-4 px-8 py-3.5 rounded-full text-sm font-display font-bold uppercase tracking-wider flex items-center gap-2"
           >
-            Let's Build
+            <span>Contact Us</span>
+            <ArrowUpRight className="w-4 h-4" />
           </a>
         </div>
       )}

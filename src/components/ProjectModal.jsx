@@ -139,7 +139,7 @@ export default function ProjectModal({ project, onClose, onSelectProject }) {
                 background: `${project.accentColor}12`,
               }}
             >
-              <span className="w-1.5 h-1.5 rounded-full animate-ping" style={{ background: project.accentColor }} />
+              <span className="w-1.5 h-1.5 rounded-full" style={{ background: project.accentColor }} />
               {project.number} // {project.label}
             </span>
             <span className="hidden sm:inline font-mono text-xs text-gray-400">
@@ -198,7 +198,7 @@ export default function ProjectModal({ project, onClose, onSelectProject }) {
             {/* Top Bar */}
             <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/[0.07] text-xs font-mono">
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-emerald-400" />
                 <span className="text-white font-bold tracking-wider uppercase">
                   {project.category}
                 </span>

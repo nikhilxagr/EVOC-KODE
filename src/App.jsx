@@ -18,16 +18,43 @@ gsap.registerPlugin(ScrollTrigger)
 
 export default function App() {
   useEffect(() => {
-    // Lenis smooth scroll — driven by GSAP ticker
-    const lenis = new Lenis({ duration: 1.3, smoothWheel: true, lerp: 0.08 })
+    // Lenis smooth scroll engine
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      orientation: 'vertical',
+      gestureOrientation: 'vertical',
+      smoothWheel: true,
+      wheelMultiplier: 1.0,
+      touchMultiplier: 1.5,
+    })
+
     lenis.on('scroll', ScrollTrigger.update)
 
-    const onTick = (time) => lenis.raf(time * 1000)
-    gsap.ticker.add(onTick)
-    gsap.ticker.lagSmoothing(0)
+    let rafId
+    const raf = (time) => {
+      lenis.raf(time)
+      rafId = requestAnimationFrame(raf)
+    }
+    rafId = requestAnimationFrame(raf)
+
+    // Smooth anchor navigation for all in-page links
+    const handleAnchorClick = (e) => {
+      const anchor = e.target.closest('a[href^="#"]')
+      if (!anchor) return
+      const href = anchor.getAttribute('href')
+      if (!href || href === '#') return
+      const target = document.querySelector(href)
+      if (target) {
+        e.preventDefault()
+        lenis.scrollTo(target, { offset: -30, duration: 1.1 })
+      }
+    }
+    document.addEventListener('click', handleAnchorClick)
 
     return () => {
-      gsap.ticker.remove(onTick)
+      document.removeEventListener('click', handleAnchorClick)
+      cancelAnimationFrame(rafId)
       lenis.destroy()
     }
   }, [])

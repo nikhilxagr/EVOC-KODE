@@ -83,9 +83,9 @@ function ProjectCard({ project, onClick }) {
 export default function Work() {
   const sectionRef = useRef(null)
   const trackRef = useRef(null)
+  const progressBarRef = useRef(null)
+  const counterRef = useRef(null)
   const [selected, setSelected] = useState(null)
-  const [activeIndex, setActiveIndex] = useState(1)
-  const [progressPercent, setProgressPercent] = useState(0)
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -106,17 +106,21 @@ export default function Work() {
           pinSpacing: true,
           start: 'top top',
           end: () => `+=${Math.max(window.innerWidth * 1.5, track.scrollWidth - window.innerWidth + 300)}`,
-          scrub: 1.2,
+          scrub: 1.0,
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
             const progress = self.progress
-            setProgressPercent(Math.round(progress * 100))
-            const idx = Math.min(
-              projects.length,
-              Math.max(1, Math.round(progress * (projects.length - 1)) + 1)
-            )
-            setActiveIndex(idx)
+            if (progressBarRef.current) {
+              progressBarRef.current.style.width = `${Math.max(16, Math.round(progress * 100))}%`
+            }
+            if (counterRef.current) {
+              const idx = Math.min(
+                projects.length,
+                Math.max(1, Math.round(progress * (projects.length - 1)) + 1)
+              )
+              counterRef.current.textContent = `${String(idx).padStart(2, '0')} / ${String(projects.length).padStart(2, '0')}`
+            }
           },
         },
       })
@@ -153,16 +157,17 @@ export default function Work() {
 
           {/* Simple Progress Counter */}
           <div className="flex items-center gap-4 self-start sm:self-end">
-            <span className="font-mono text-xs text-gray-400 tracking-wider">
-              {String(activeIndex).padStart(2, '0')} / {String(projects.length).padStart(2, '0')}
+            <span ref={counterRef} className="font-mono text-xs text-gray-400 tracking-wider">
+              01 / {String(projects.length).padStart(2, '0')}
             </span>
 
             {/* Clean progress line */}
             <div className="w-24 sm:w-32 h-1 rounded-full bg-white/[0.08] overflow-hidden">
               <div
-                className="h-full rounded-full transition-all duration-150"
+                ref={progressBarRef}
+                className="h-full rounded-full transition-all duration-75"
                 style={{
-                  width: `${Math.max(16, progressPercent)}%`,
+                  width: '16%',
                   background: '#3B82F6',
                 }}
               />
