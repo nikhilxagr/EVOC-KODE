@@ -36,7 +36,11 @@ const pillars = [
 export default function About() {
   const sectionRef = useRef(null)
   const boxContainerRef = useRef(null)
+  const quoteRef = useRef(null)
   const [boxTilt, setBoxTilt] = useState({ rotX: 0, rotY: 0 })
+  const [typewriterActive, setTypewriterActive] = useState(false)
+
+  const QUOTE = '"Great software is built by obsessing over user experience, clean architecture, and taking pride in every detail."'
 
   // Interactive 3D tilt tracking for the opened box
   const handleMouseMove = (e) => {
@@ -67,6 +71,22 @@ export default function About() {
   const handleTouchEnd = () => {
     setBoxTilt({ rotX: 0, rotY: 0 })
   }
+
+  // Trigger typewriter when quote enters viewport
+  useEffect(() => {
+    if (!quoteRef.current) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setTypewriterActive(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.4 }
+    )
+    observer.observe(quoteRef.current)
+    return () => observer.disconnect()
+  }, [])
 
   // 3D Box Opening & Expand ScrollTrigger Animation
   useEffect(() => {
@@ -229,14 +249,82 @@ export default function About() {
               </div>
             </div>
 
-            {/* Core Manifesto Statement inside the Box */}
+            {/* Manifesto quote with premium typewriter reveal */}
             <div
-              className="py-7 max-w-2xl space-y-2"
+              ref={quoteRef}
+              className="py-7 max-w-2xl"
               style={{ transform: 'translateZ(18px)', transformStyle: 'preserve-3d' }}
             >
+              {/* Status label */}
+              <div className="flex items-center gap-2 mb-4">
+                <span
+                  className="font-mono text-[9px] tracking-[0.22em] uppercase transition-all duration-700"
+                  style={{ color: typewriterActive ? 'rgba(34,211,238,0.6)' : 'rgba(34,211,238,0.25)' }}
+                >
+                  {typewriterActive ? 'writing...' : 'standby'}
+                </span>
+                <span
+                  className="inline-block w-1 h-1 rounded-full transition-colors duration-700"
+                  style={{ backgroundColor: typewriterActive ? '#22D3EE' : 'rgba(255,255,255,0.12)' }}
+                />
+              </div>
+
+              {/* Character-by-character reveal */}
               <p className="font-display text-xl sm:text-2xl lg:text-3xl text-white font-bold leading-snug">
-                "Great software is built by obsessing over user experience, clean architecture, and taking pride in every detail."
+                {QUOTE.split('').map((char, i) => {
+                  // Each char animates in with a delay proportional to index
+                  const delayMs = typewriterActive ? i * 18 : 0
+                  return (
+                    <span
+                      key={i}
+                      style={{
+                        display: 'inline-block',
+                        whiteSpace: char === ' ' ? 'pre' : 'normal',
+                        opacity: typewriterActive ? 1 : 0,
+                        transform: typewriterActive ? 'translateY(0px)' : 'translateY(6px)',
+                        transition: typewriterActive
+                          ? `opacity 0.22s ease ${delayMs}ms, transform 0.22s ease ${delayMs}ms`
+                          : 'none',
+                      }}
+                    >
+                      {char}
+                    </span>
+                  )
+                })}
+                {/* Blinking caret that fades out after typing is done */}
+                {typewriterActive && (
+                  <span
+                    className="inline-block ml-0.5 align-baseline"
+                    style={{
+                      width: '2px',
+                      height: '1.1em',
+                      background: 'linear-gradient(180deg, #38BDF8, #818CF8)',
+                      borderRadius: '1px',
+                      verticalAlign: 'text-bottom',
+                      animation: 'caretBlink 1s step-end infinite',
+                      animationDelay: `${QUOTE.length * 18}ms`,
+                      opacity: 0,
+                      animationFillMode: 'forwards',
+                    }}
+                  />
+                )}
               </p>
+
+              {/* Horizontal shimmer line that sweeps across as text appears */}
+              {typewriterActive && (
+                <div
+                  className="mt-5 h-px w-full overflow-hidden rounded-full"
+                  style={{ background: 'rgba(255,255,255,0.06)' }}
+                >
+                  <div
+                    style={{
+                      height: '100%',
+                      background: 'linear-gradient(90deg, transparent, #22D3EE, transparent)',
+                      animation: `shimmerSweep ${(QUOTE.length * 18 + 400) / 1000}s ease-out forwards`,
+                    }}
+                  />
+                </div>
+              )}
             </div>
 
             {/* The 3 Minimal, High-Impact Pillars (Clean 3D Chips) */}
